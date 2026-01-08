@@ -1,0 +1,1918 @@
+<!doctype html>
+<html lang="vi">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tuition Information</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 24px;
+      font-family: Calibri, "Segoe UI", Arial, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+      background: #f5f7fa;
+      color: #1a1a1a;
+      height: 100%;
+    }
+
+    html {
+      height: 100%;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    .page-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin: 0;
+    }
+
+    .lang-toggle-pill {
+      background: #2563eb;
+      border-radius: 24px;
+      padding: 8px 20px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .lang-option {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 4px 8px;
+      transition: all 0.2s;
+    }
+
+    .lang-option.active {
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .lang-separator {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 14px;
+    }
+
+    .student-card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 32px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .student-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 24px;
+    }
+
+    .student-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .student-label {
+      color: #6b7280;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .student-value {
+      color: #1a1a1a;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .student-value.status-active {
+      color: #10b981;
+    }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    @media (min-width: 900px) {
+      .main-content {
+        grid-template-columns: 380px 1fr;
+      }
+    }
+
+    .summary-card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      height: fit-content;
+    }
+
+    .summary-card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin: 0 0 20px 0;
+    }
+
+    .summary-box {
+      border: 2px solid #ef4444;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+      background: #fef2f2;
+    }
+
+    .summary-label {
+      color: #ef4444;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .summary-amount {
+      font-size: 36px;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+
+    .pay-btn {
+      width: 100%;
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s;
+      margin-bottom: 12px;
+    }
+
+    .pay-btn:hover {
+      background: #1d4ed8;
+    }
+
+    .pay-btn:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .pay-btn-icon {
+      font-size: 20px;
+    }
+
+    .helper-text {
+      text-align: center;
+      color: #9ca3af;
+      font-size: 12px;
+    }
+
+    .tuition-section {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin: 0 0 20px 0;
+    }
+
+    .accordion {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .accordion-item {
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #e5e7eb;
+    }
+
+    .accordion-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      cursor: pointer;
+      user-select: none;
+      transition: opacity 0.2s;
+    }
+
+    .accordion-header:hover {
+      opacity: 0.9;
+    }
+
+    .accordion-header.unpaid {
+      background: #fee2e2;
+    }
+
+    .accordion-header.processing {
+      background: #fef3c7;
+    }
+
+    .accordion-header.paid {
+      background: #d1fae5;
+    }
+
+    .accordion-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .accordion-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .accordion-dot.unpaid {
+      background: #ef4444;
+    }
+
+    .accordion-dot.processing {
+      background: #f59e0b;
+    }
+
+    .accordion-dot.paid {
+      background: #10b981;
+    }
+
+    .accordion-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .accordion-chevron {
+      font-size: 18px;
+      color: #6b7280;
+      transition: transform 0.3s;
+    }
+
+    .accordion-chevron.expanded {
+      transform: rotate(180deg);
+    }
+
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+
+    .accordion-content.expanded {
+      max-height: 2000px;
+      transition: max-height 0.5s ease-in;
+    }
+
+    .accordion-body {
+      padding: 16px;
+      background: #ffffff;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #9ca3af;
+      font-size: 14px;
+      padding: 20px;
+    }
+
+    .tuition-items {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .tuition-item {
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .tuition-item.unpaid {
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+    }
+
+    .tuition-item.processing {
+      background: #fef3c7;
+      border: 1px solid #fde68a;
+    }
+
+    .tuition-item.paid {
+      background: #ffffff;
+      border: 1px solid #10b981;
+    }
+
+    .item-left {
+      flex: 1;
+    }
+
+    .item-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+
+    .item-subtitle {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    .item-amount {
+      font-size: 16px;
+      font-weight: 700;
+      white-space: nowrap;
+      margin-left: 16px;
+    }
+
+    .item-amount.unpaid {
+      color: #dc2626;
+    }
+
+    .item-amount.processing {
+      color: #d97706;
+    }
+
+    .item-amount.paid {
+      color: #10b981;
+    }
+
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-backdrop.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #ffffff;
+      border-radius: 12px;
+      max-width: 900px;
+      width: 100%;
+      max-height: 90%;
+      overflow-y: auto;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-main-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    @media (min-width: 768px) {
+      .modal-main-grid {
+        grid-template-columns: 60fr 40fr;
+      }
+    }
+
+    .modal-left {
+      padding: 0;
+    }
+
+    .modal-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+    }
+
+    .modal-header-icon {
+      font-size: 18px;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #111827;
+      margin: 0;
+      flex: 1;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px;
+      line-height: 1;
+      color: #9ca3af;
+      font-weight: 300;
+    }
+
+    .modal-body {
+      padding: 16px 20px;
+    }
+
+    .total-amount-box {
+      background: #dbeafe;
+      border: 1px solid #93c5fd;
+      border-radius: 6px;
+      padding: 12px 16px;
+      text-align: left;
+      margin-bottom: 12px;
+    }
+
+    .total-amount-label {
+      font-size: 12px;
+      color: #1e40af;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .total-amount-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #1e3a8a;
+    }
+
+    .warning-box {
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+      border-radius: 6px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+    }
+
+    .warning-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #991b1b;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .warning-text {
+      font-size: 12px;
+      color: #7f1d1d;
+      line-height: 1.5;
+    }
+
+    .bank-details-box {
+      background: #dbeafe;
+      border: 1px solid #93c5fd;
+      border-radius: 6px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+    }
+
+    .bank-details-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1e40af;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .bank-info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+      gap: 12px;
+    }
+
+    .bank-info-label {
+      font-size: 12px;
+      color: #1e3a8a;
+      font-weight: 600;
+      min-width: 100px;
+    }
+
+    .bank-info-value {
+      flex: 1;
+      font-size: 13px;
+      font-weight: 700;
+      color: #1e3a8a;
+      text-align: right;
+    }
+
+    .copy-icon {
+      background: #e5e7eb;
+      color: #6b7280;
+      border: 1px solid #d1d5db;
+      border-radius: 3px;
+      padding: 4px 6px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-weight: 500;
+      min-width: 24px;
+      text-align: center;
+    }
+
+    .copy-icon:hover {
+      background: #d1d5db;
+    }
+
+    .copy-icon.copied {
+      background: #d1fae5;
+      color: #10b981;
+      border-color: #10b981;
+    }
+
+    .reference-box {
+      background: #e9d5ff;
+      border: 1px solid #c084fc;
+      border-radius: 6px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+    }
+
+    .reference-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #6b21a8;
+      margin-bottom: 6px;
+    }
+
+    .reference-text {
+      font-size: 12px;
+      color: #581c87;
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .reference-value-box {
+      background: #ffffff;
+      border: 1px solid #c084fc;
+      border-radius: 4px;
+      padding: 8px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .reference-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: #581c87;
+      flex: 1;
+      font-family: 'Courier New', monospace;
+    }
+
+    .confirmation-box {
+      background: #fed7aa;
+      border: 1px solid #fb923c;
+      border-radius: 6px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+    }
+
+    .confirmation-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #9a3412;
+      margin-bottom: 6px;
+    }
+
+    .confirmation-text {
+      font-size: 12px;
+      color: #7c2d12;
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    .confirm-transaction-btn {
+      width: 100%;
+      background: #ea580c;
+      color: #ffffff;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .confirm-transaction-btn:hover {
+      background: #c2410c;
+    }
+
+    .confirm-transaction-btn:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .modal-right {
+      background: #d1fae5;
+      border-left: 1px solid #6ee7b7;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    @media (max-width: 767px) {
+      .modal-right {
+        border-left: none;
+        border-top: 1px solid #6ee7b7;
+      }
+    }
+
+    .qr-title-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 16px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .qr-title-icon {
+      font-size: 16px;
+    }
+
+    .qr-section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #065f46;
+      margin: 0;
+    }
+
+    .qr-code-wrapper {
+      background: #ffffff;
+      border: 2px solid #10b981;
+      border-radius: 8px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .qr-code-image {
+      width: 260px;
+      height: 260px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qr-code-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .qr-placeholder {
+      color: #9ca3af;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .qr-footer-text {
+      font-size: 14px;
+      color: #065f46;
+      text-align: center;
+      line-height: 1.4;
+      font-weight: 500;
+      margin-top: 12px;
+      font-family: Calibri, "Segoe UI", Arial, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+    }
+
+    .modal-footer {
+      padding: 14px 20px;
+      border-top: 1px solid #e5e7eb;
+      text-align: center;
+    }
+
+    .understood-btn {
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 40px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .understood-btn:hover {
+      background: #1d4ed8;
+    }
+
+    .alert-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .alert-modal.show {
+      display: flex;
+    }
+
+    .alert-content {
+      background: #ffffff;
+      border-radius: 12px;
+      max-width: 400px;
+      width: 100%;
+      padding: 32px;
+      text-align: center;
+    }
+
+    .alert-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .alert-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 12px;
+    }
+
+    .alert-message {
+      font-size: 14px;
+      color: #6b7280;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .alert-btn {
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      padding: 12px 32px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .alert-btn:hover {
+      background: #1d4ed8;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #111827;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 2000;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    @media (max-width: 899px) {
+      .student-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .student-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .page-title {
+        font-size: 24px;
+      }
+
+      .summary-amount {
+        font-size: 28px;
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="page-wrapper">
+   <div class="page-header">
+    <h1 class="page-title" id="pageTitle">—</h1>
+    <div class="lang-toggle-pill"><button class="lang-option" id="btnEN" onclick="switchLanguage('en')">English</button> <span class="lang-separator">|</span> <button class="lang-option active" id="btnVI" onclick="switchLanguage('vi')">Tieng Viet</button>
+    </div>
+   </div>
+   <div class="student-card">
+    <div class="student-grid">
+     <div class="student-field">
+      <div class="student-label" id="lblStudentID">
+       —
+      </div>
+      <div class="student-value" id="valStudentID">
+       —
+      </div>
+     </div>
+     <div class="student-field">
+      <div class="student-label" id="lblFullName">
+       —
+      </div>
+      <div class="student-value" id="valFullName">
+       —
+      </div>
+     </div>
+     <div class="student-field">
+      <div class="student-label" id="lblDateOfBirth">
+       —
+      </div>
+      <div class="student-value" id="valDateOfBirth">
+       —
+      </div>
+     </div>
+     <div class="student-field">
+      <div class="student-label" id="lblClass">
+       —
+      </div>
+      <div class="student-value" id="valClass">
+       —
+      </div>
+     </div>
+     <div class="student-field">
+      <div class="student-label" id="lblStatus">
+       —
+      </div>
+      <div class="student-value status-active" id="valStatus">
+       —
+      </div>
+     </div>
+    </div>
+   </div>
+   <div class="main-content">
+    <div class="summary-card">
+     <h2 class="summary-card-title" id="summaryTitle">—</h2>
+     <div class="summary-box">
+      <div class="summary-label" id="lblTotalOutstanding">
+       —
+      </div>
+      <div class="summary-amount" id="totalAmount">
+       0 d
+      </div>
+     </div><button class="pay-btn" id="btnPayTuition" onclick="openModal()"> <span class="pay-btn-icon">💳</span> <span id="btnPayText">—</span> </button>
+     <div class="helper-text" id="helperText">
+      —
+     </div>
+    </div>
+    <div class="tuition-section">
+     <h2 class="section-title" id="sectionTitle">—</h2>
+     <div class="accordion">
+      <div class="accordion-item">
+       <div class="accordion-header unpaid" onclick="toggleAccordion('unpaid')">
+        <div class="accordion-header-left">
+         <div class="accordion-dot unpaid"></div><span class="accordion-title" id="titleUnpaid">—</span>
+        </div><span class="accordion-chevron" id="chevronUnpaid">▼</span>
+       </div>
+       <div class="accordion-content" id="contentUnpaid">
+        <div class="accordion-body">
+         <div class="tuition-items" id="itemsUnpaid"></div>
+        </div>
+       </div>
+      </div>
+      <div class="accordion-item">
+       <div class="accordion-header processing" onclick="toggleAccordion('processing')">
+        <div class="accordion-header-left">
+         <div class="accordion-dot processing"></div><span class="accordion-title" id="titleProcessing">—</span>
+        </div><span class="accordion-chevron expanded" id="chevronProcessing">▼</span>
+       </div>
+       <div class="accordion-content expanded" id="contentProcessing">
+        <div class="accordion-body">
+         <div class="tuition-items" id="itemsProcessing"></div>
+        </div>
+       </div>
+      </div>
+      <div class="accordion-item">
+       <div class="accordion-header paid" onclick="toggleAccordion('paid')">
+        <div class="accordion-header-left">
+         <div class="accordion-dot paid"></div><span class="accordion-title" id="titlePaid">—</span>
+        </div><span class="accordion-chevron expanded" id="chevronPaid">▼</span>
+       </div>
+       <div class="accordion-content expanded" id="contentPaid">
+        <div class="accordion-body">
+         <div class="tuition-items" id="itemsPaid"></div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <div class="modal-backdrop" id="paymentModal">
+   <div class="modal-content">
+    <div class="modal-header"><span class="modal-header-icon">💳</span>
+     <h2 class="modal-title" id="modalTitle">—</h2><button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div style="padding: 0 20px;">
+     <div class="total-amount-box">
+      <div class="total-amount-label" id="lblTotalAmount">
+       —
+      </div>
+      <div class="total-amount-value" id="modalAmount">
+       0 d
+      </div>
+     </div>
+    </div>
+    <div class="modal-main-grid">
+     <div class="modal-left">
+      <div class="modal-body">
+       <div class="warning-box">
+        <div class="warning-title"><span>⚠️</span> <span id="warningTitle">—</span>
+        </div>
+        <div class="warning-text" id="warningText">
+         —
+        </div>
+       </div>
+       <div class="bank-details-box">
+        <div class="bank-details-title"><span>🏦</span> <span id="bankDetailsTitle">—</span>
+        </div>
+        <div class="bank-info-row"><span class="bank-info-label" id="lblBankName">—</span> <span class="bank-info-value" id="valBankName">Techcombank</span>
+        </div>
+        <div class="bank-info-row"><span class="bank-info-label" id="lblAccountNumber">—</span> <span class="bank-info-value" id="valAccountNumber">5141 4131 319</span> <button class="copy-icon" id="copyAccountBtn" onclick="copyText('account')">📋</button>
+        </div>
+        <div class="bank-info-row"><span class="bank-info-label" id="lblAccountHolder">—</span> <span class="bank-info-value" id="valAccountHolder">HOANG THANH TUNG</span> <button class="copy-icon" id="copyHolderBtn" onclick="copyText('holder')">📋</button>
+        </div>
+       </div>
+       <div class="reference-box">
+        <div class="reference-title" id="referenceTitle">
+         —
+        </div>
+        <div class="reference-text" id="referenceText">
+         —
+        </div>
+        <div class="reference-value-box"><span class="reference-value" id="valTransferContent">—</span> <button class="copy-icon" id="copyReferenceBtn" onclick="copyText('reference')">📋</button>
+        </div>
+       </div>
+       <div class="confirmation-box">
+        <div class="confirmation-title" id="confirmationTitle">
+         —
+        </div>
+        <div class="confirmation-text" id="confirmationText">
+         —
+        </div><button class="confirm-transaction-btn" id="btnConfirmTransaction" onclick="confirmPayment()"> <span>✓</span> <span id="btnConfirmText">—</span> </button>
+       </div>
+      </div>
+     </div>
+     <div class="modal-right">
+      <div class="qr-title-row"><span class="qr-title-icon">📱</span>
+       <div class="qr-section-title" id="qrSectionTitle">
+        —
+       </div>
+      </div>
+      <div class="qr-code-wrapper">
+       <div class="qr-code-image"><span class="qr-placeholder" id="qrPlaceholder">—</span>
+       </div>
+      </div>
+      <div class="qr-footer-text" id="qrFooterText">
+       —
+      </div>
+     </div>
+    </div>
+    <div class="modal-footer"><button class="understood-btn" id="btnUnderstood" onclick="closeModal()">—</button>
+    </div>
+   </div>
+  </div>
+  <div class="alert-modal" id="alertModal">
+   <div class="alert-content">
+    <div class="alert-icon">
+     ✅
+    </div>
+    <div class="alert-title" id="alertTitle">
+     —
+    </div>
+    <div class="alert-message" id="alertMessage">
+     —
+    </div><button class="alert-btn" onclick="closeAlert()">OK</button>
+   </div>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCDzv0HseeLfijzyXZjKWFh9QaLrMB4afo",
+      authDomain: "tnl2026.firebaseapp.com",
+      projectId: "tnl2026",
+      storageBucket: "tnl2026.firebasestorage.app",
+      messagingSenderId: "883525152224",
+      appId: "1:883525152224:web:619ae152cd8df3fcca8f85",
+      measurementId: "G-3K6LXCKHZ9"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let currentLang = 'vi';
+    let allItems = [];
+    let studentData = null;
+    const accordionState = { unpaid: false, processing: true, paid: true };
+    let unsubscribeFunctions = [];
+
+    const defaultConfig = {
+      bank_name: 'Techcombank',
+      account_number: '5141 4131 319',
+      account_holder: 'HOANG THANH TUNG',
+      transfer_content: ''
+    };
+
+    const translations = {
+      vi: {
+        pageTitle: 'Thông tin học phí',
+        lblStudentID: 'Mã học sinh:',
+        lblFullName: 'Họ và tên:',
+        lblDateOfBirth: 'Ngày sinh:',
+        lblClass: 'Lớp:',
+        lblStatus: 'Trạng thái:',
+        valStatus: 'Đang học',
+        summaryTitle: 'Tóm tắt học phí cần đóng',
+        lblTotalOutstanding: 'Tổng cần đóng',
+        btnPayText: 'Đóng học phí',
+        helperText: 'Vui lòng nhấp vào đây để xem hướng dẫn',
+        sectionTitle: 'Thông tin học phí',
+        titleUnpaid: 'Học phí cần đóng',
+        titleProcessing: 'Thanh toán đang xử lý',
+        titlePaid: 'Học phí đã hoàn thành',
+        emptyState: 'Không có dữ liệu',
+        paymentDate: 'Ngày hoàn thành:',
+        modalTitle: 'Hướng dẫn đóng học phí',
+        lblTotalAmount: 'Tổng học phí cần đóng',
+        warningTitle: 'Lưu ý khi đóng học phí',
+        warningText: 'Vui lòng bấm nút "Tôi xác nhận đã hoàn thành giao dịch" phía dưới sau khi hoàn tất thanh toán. Chúng tôi sẽ chỉ xử lý và cập nhật phí sau khi nhận được xác nhận.',
+        bankDetailsTitle: 'Thông tin chuyển khoản',
+        lblBankName: 'Tên ngân hàng:',
+        lblAccountNumber: 'Số tài khoản:',
+        lblAccountHolder: 'Chủ tài khoản:',
+        referenceTitle: 'Nội dung chuyển khoản',
+        referenceText: 'Vui lòng ghi chính xác nội dung này khi chuyển khoản:',
+        confirmationTitle: 'Xác nhận thanh toán',
+        confirmationText: 'Vui lòng xác nhận bạn đã hoàn thành giao dịch. Kế toán sẽ kiểm tra và cập nhật trạng thái sau 5-10 ngày làm việc.',
+        btnConfirmText: 'Tôi xác nhận đã hoàn thành giao dịch',
+        qrSectionTitle: 'Thanh toán QR Code',
+        qrFooterText: 'Đây là mã một lần. Vui lòng KHÔNG sử dụng lại trong tương lai.',
+        btnUnderstood: 'Đã hiểu',
+        processing: 'Đang xử lý...',
+        toastCopied: 'Đã sao chép!',
+        alertTitle: 'Cảm ơn bạn đã xác nhận!',
+        alertMessage: 'Học phí đã được chuyển sang trạng thái "Đang xử lý".\nChúng tôi sẽ xử lý thanh toán trong 5-10 ngày làm việc.',
+        loadingText: 'Đang tải...',
+        loadingTuition: 'Đang tải dữ liệu học phí...',
+        errorNotFound: 'Không tìm thấy dữ liệu',
+        qrPlaceholder: 'Đang tải QR...',
+        qrNoFees: 'Không có phí cần đóng',
+        errorConfirmPayment: 'Lỗi xác nhận thanh toán',
+        tuitionMonth: 'Học phí tháng'
+      },
+      en: {
+        pageTitle: 'Tuition Information',
+        lblStudentID: 'Student ID:',
+        lblFullName: 'Full Name:',
+        lblDateOfBirth: 'Date of Birth:',
+        lblClass: 'Class:',
+        lblStatus: 'Status:',
+        valStatus: 'Active',
+        summaryTitle: 'Payment Summary',
+        lblTotalOutstanding: 'Total Outstanding',
+        btnPayText: 'Pay Tuition',
+        helperText: 'Please click here for instructions',
+        sectionTitle: 'Tuition Information',
+        titleUnpaid: 'Unpaid Tuition',
+        titleProcessing: 'Processing Payments',
+        titlePaid: 'Paid Tuition',
+        emptyState: 'No data available',
+        paymentDate: 'Payment date:',
+        modalTitle: 'Payment Instructions',
+        lblTotalAmount: 'Total Amount to Pay',
+        warningTitle: 'Payment Notes',
+        warningText: 'Scroll down to make confirmation once you finish the transaction. We can only process the payment if you do this.',
+        bankDetailsTitle: 'Bank Transfer Details',
+        lblBankName: 'Bank name:',
+        lblAccountNumber: 'Account number:',
+        lblAccountHolder: 'Account holder:',
+        referenceTitle: 'Payment Reference',
+        referenceText: 'Please include this exact reference in your transfer:',
+        confirmationTitle: 'Payment Confirmation',
+        confirmationText: 'Please confirm you have completed the transaction. Our accountants will check and update the payment status within 5-10 business days.',
+        btnConfirmText: 'I confirm that I have completed the transaction',
+        qrSectionTitle: 'QR Code Payment',
+        qrFooterText: 'This is a one-time code. Please do NOT reuse it in the future.',
+        btnUnderstood: 'Understood',
+        processing: 'Processing...',
+        toastCopied: 'Copied!',
+        alertTitle: 'Thank you for confirming!',
+        alertMessage: 'Tuition has been moved to "Processing" status.\nWe will process your payment within 5-10 business days.',
+        loadingText: 'Loading...',
+        loadingTuition: 'Loading tuition data...',
+        errorNotFound: 'Data not found',
+        qrPlaceholder: 'Loading QR...',
+        qrNoFees: 'No fees to pay',
+        errorConfirmPayment: 'Error confirming payment',
+        tuitionMonth: 'Tuition for'
+      }
+    };
+
+    function getUrlParams() {
+      const params = new URLSearchParams(window.location.search);
+      return {
+        publicCode: params.get('publicCode'),
+        studentId: params.get('studentId')
+      };
+    }
+
+    async function loadStudentData() {
+      const params = getUrlParams();
+
+      if (!params.studentId && !params.publicCode) {
+        showErrorState('Missing studentId or publicCode in URL parameters');
+        return false;
+      }
+
+      try {
+        let studentDoc;
+
+        if (params.studentId) {
+          studentDoc = await db.collection('students').doc(params.studentId).get();
+        } else if (params.publicCode) {
+          const snapshot = await db.collection('students')
+            .where('publicCode', '==', params.publicCode)
+            .limit(1)
+            .get();
+          
+          if (!snapshot.empty) {
+            studentDoc = snapshot.docs[0];
+          }
+        }
+
+        if (!studentDoc || !studentDoc.exists) {
+          showErrorState('Student not found');
+          return false;
+        }
+
+        const data = studentDoc.data();
+        studentData = {
+          studentDocId: studentDoc.id,
+          publicCode: data.publicCode,
+          fullName: data.fullName,
+          status: data.status,
+          classId: data.classId,
+          dateOfBirth: data.dob
+        };
+
+        if (studentData.classId) {
+          const classDoc = await db.collection('classes').doc(studentData.classId).get();
+          if (classDoc.exists) {
+            studentData.className = classDoc.data().name;
+          }
+        }
+
+        updateStudentBanner();
+        return true;
+
+      } catch (error) {
+        console.error('Error loading student:', error);
+        showErrorState('Error loading student data');
+        return false;
+      }
+    }
+
+    function updateStudentBanner() {
+      if (!studentData) return;
+
+      const t = translations[currentLang];
+
+      document.getElementById('valStudentID').textContent = studentData.publicCode || '—';
+      document.getElementById('valFullName').textContent = studentData.fullName || '—';
+      document.getElementById('valClass').textContent = studentData.className || '—';
+      
+      const statusText = studentData.status === 'active' ? t.valStatus : studentData.status || '—';
+      document.getElementById('valStatus').textContent = statusText;
+
+      let dobDisplay = '—';
+      if (studentData.dateOfBirth) {
+        let dob = studentData.dateOfBirth;
+        
+        if (dob && typeof dob === 'object' && typeof dob.toDate === 'function') {
+          dob = dob.toDate();
+        }
+        
+        if (dob instanceof Date && !isNaN(dob.getTime())) {
+          const day = String(dob.getDate()).padStart(2, '0');
+          const month = String(dob.getMonth() + 1).padStart(2, '0');
+          const year = dob.getFullYear();
+          dobDisplay = `${day}/${month}/${year}`;
+        }
+        else if (typeof dob === 'string') {
+          dob = dob.trim();
+          if (dob.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            const [year, month, day] = dob.split('-');
+            dobDisplay = `${day}/${month}/${year}`;
+          } else if (dob.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+            dobDisplay = dob;
+          } else if (dob.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)) {
+            const [day, month, year] = dob.split('/');
+            dobDisplay = `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+          }
+        }
+      }
+      document.getElementById('valDateOfBirth').textContent = dobDisplay;
+
+      updateTransferReference();
+    }
+
+    function updateTransferReference() {
+      if (!studentData) return;
+
+      let dobFormatted = '';
+      if (studentData.dateOfBirth) {
+        let dob = studentData.dateOfBirth;
+        
+        if (dob && typeof dob === 'object' && typeof dob.toDate === 'function') {
+          dob = dob.toDate();
+        }
+        
+        if (dob instanceof Date && !isNaN(dob.getTime())) {
+          const day = String(dob.getDate()).padStart(2, '0');
+          const month = String(dob.getMonth() + 1).padStart(2, '0');
+          const year = dob.getFullYear();
+          dobFormatted = `${day}-${month}-${year}`;
+        }
+        else if (typeof dob === 'string') {
+          dob = dob.trim();
+          if (dob.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            const [year, month, day] = dob.split('-');
+            dobFormatted = `${day}-${month}-${year}`;
+          } else if (dob.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+            dobFormatted = dob.replace(/\//g, '-');
+          } else if (dob.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)) {
+            const [day, month, year] = dob.split('/');
+            dobFormatted = `${day.padStart(2, '0')}-${month.padStart(2, '0')}-${year}`;
+          }
+        }
+      }
+
+      const now = new Date();
+      const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
+      const currentYear = now.getFullYear();
+
+      const fullNameNoDiacritics = studentData.fullName ? removeDiacritics(studentData.fullName) : '';
+      
+      const transferContent = `${fullNameNoDiacritics} - ${dobFormatted} - ${currentMonth}-${currentYear}`;
+      
+      defaultConfig.transfer_content = transferContent;
+      
+      const transferElement = document.getElementById('valTransferContent');
+      if (transferElement) {
+        transferElement.textContent = transferContent;
+      }
+    }
+
+    function showErrorState(message) {
+      const t = translations[currentLang];
+      document.querySelector('.page-wrapper').innerHTML = `
+        <div style="text-align: center; padding: 60px 20px;">
+          <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+          <div style="font-size: 20px; font-weight: 700; color: #1a1a1a; margin-bottom: 12px;">
+            ${t.errorNotFound}
+          </div>
+          <div style="font-size: 14px; color: #6b7280;">
+            ${message}
+          </div>
+        </div>
+      `;
+    }
+
+    async function loadTuitionCalculations() {
+      if (!studentData) return [];
+
+      const items = [];
+
+      try {
+        const ttcSnapshot = await db.collection('tuition_calculations')
+          .where('studentPublicCode', '==', studentData.publicCode)
+          .get();
+        
+        const paySnapshot = await db.collection('payments')
+          .where('studentPublicCode', '==', studentData.publicCode)
+          .get();
+
+        const paymentMap = new Map();
+        paySnapshot.forEach(doc => {
+          const data = doc.data();
+          const ym = data.ym || `${data.year}-${String(data.month).padStart(2, '0')}`;
+          paymentMap.set(ym, data);
+        });
+
+        ttcSnapshot.forEach(doc => {
+          const ttcData = doc.data();
+          const year = ttcData.year;
+          const month = ttcData.month;
+          const ym = ttcData.ym || `${year}-${String(month).padStart(2, '0')}`;
+          const monthStr = String(month).padStart(2, '0');
+
+          const payData = paymentMap.get(ym) || {};
+
+          const finalTotal = ttcData.finalTotal || 0;
+          const extraFeesTotal = ttcData.extraFeesTotal || 0;
+          const extraFees = ttcData.extraFees || [];
+          
+          const tuitionAmount = finalTotal - extraFeesTotal;
+          
+          const payDocId = `PAY_${studentData.publicCode}_${year}_${monthStr}`;
+
+          if (tuitionAmount > 0) {
+            const tuitionStatus = classifyTuitionStatus(payData);
+            const tuitionPaymentDate = extractPaymentDate(payData.tuitionPaidAt);
+
+            items.push({
+              id: `tuition_${ym}`,
+              type: 'tuition',
+              month: month,
+              year: year,
+              ym: ym,
+              title: `${translations.vi.tuitionMonth} ${monthStr}/${year}`,
+              titleEN: `${translations.en.tuitionMonth} ${monthStr}/${year}`,
+              amount: tuitionAmount,
+              status: tuitionStatus,
+              payment_date: tuitionPaymentDate,
+              payDocId: payDocId
+            });
+          }
+
+          extraFees.forEach((fee, index) => {
+            if (!fee.amount || fee.amount <= 0) return;
+
+            const feeStatus = classifyExtraFeeStatus(payData);
+            const feePaymentDate = extractPaymentDate(payData.extraFeesPaidAt);
+
+            items.push({
+              id: `fee_${ym}_${index}`,
+              type: 'extra_fee',
+              month: month,
+              year: year,
+              ym: ym,
+              title: fee.name,
+              titleEN: fee.name,
+              amount: fee.amount || 0,
+              status: feeStatus,
+              payment_date: feePaymentDate,
+              payDocId: payDocId,
+              note: fee.note
+            });
+          });
+        });
+
+        items.sort((a, b) => b.ym.localeCompare(a.ym));
+
+        return items;
+
+      } catch (error) {
+        console.error('Error loading tuition calculations:', error);
+        return [];
+      }
+    }
+
+    function classifyTuitionStatus(payData) {
+      if (payData.tuitionPaid === true) return 'paid';
+      if (payData.tuitionProcessed === true) return 'processing';
+      return 'unpaid';
+    }
+
+    function classifyExtraFeeStatus(payData) {
+      if (payData.extraFeesPaid === true) return 'paid';
+      if (payData.extraFeesProcessed === true) return 'processing';
+      return 'unpaid';
+    }
+
+    function extractPaymentDate(timestamp) {
+      if (!timestamp) {
+        return null;
+      }
+      
+      if (timestamp.toDate) {
+        const date = timestamp.toDate();
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      }
+      
+      if (typeof timestamp === 'string') {
+        const match = timestamp.match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (match) {
+          const [, year, month, day] = match;
+          return `${day}/${month}/${year}`;
+        }
+      }
+
+      return null;
+    }
+
+    function setLoadingUI() {
+      const t = translations[currentLang];
+      
+      document.getElementById('valStudentID').textContent = t.loadingText;
+      document.getElementById('valFullName').textContent = t.loadingText;
+      document.getElementById('valClass').textContent = t.loadingText;
+      document.getElementById('valStatus').textContent = t.loadingText;
+      
+      document.getElementById('totalAmount').textContent = t.loadingText;
+      document.getElementById('modalAmount').textContent = t.loadingText;
+      
+      document.getElementById('itemsUnpaid').innerHTML = `<div class="empty-state">${t.loadingTuition}</div>`;
+      document.getElementById('itemsProcessing').innerHTML = `<div class="empty-state">${t.loadingTuition}</div>`;
+      document.getElementById('itemsPaid').innerHTML = `<div class="empty-state">${t.loadingTuition}</div>`;
+      
+      const payButton = document.getElementById('btnPayTuition');
+      payButton.disabled = true;
+      payButton.style.background = '#9ca3af';
+    }
+
+    async function initializeApp() {
+      setLoadingUI();
+
+      updateUILanguage();
+
+      const studentLoaded = await loadStudentData();
+      if (!studentLoaded) return;
+
+      allItems = await loadTuitionCalculations();
+
+      renderAllItems();
+      updateSummary();
+      setupRealtimeListeners();
+
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange: async (config) => {
+            document.getElementById('valBankName').textContent = config.bank_name || defaultConfig.bank_name;
+            document.getElementById('valAccountNumber').textContent = config.account_number || defaultConfig.account_number;
+            document.getElementById('valAccountHolder').textContent = config.account_holder || defaultConfig.account_holder;
+            document.getElementById('valTransferContent').textContent = config.transfer_content || defaultConfig.transfer_content;
+          },
+          mapToCapabilities: () => ({
+            recolorables: [],
+            borderables: [],
+            fontEditable: undefined,
+            fontSizeable: undefined
+          }),
+          mapToEditPanelValues: (config) => new Map([
+            ['bank_name', config.bank_name || defaultConfig.bank_name],
+            ['account_number', config.account_number || defaultConfig.account_number],
+            ['account_holder', config.account_holder || defaultConfig.account_holder]
+          ])
+        });
+      }
+    }
+
+    function setupRealtimeListeners() {
+      if (!studentData) return;
+
+      unsubscribeFunctions.forEach(unsub => unsub());
+      unsubscribeFunctions = [];
+
+      const paymentsUnsubscribe = db.collection('payments')
+        .where('studentPublicCode', '==', studentData.publicCode)
+        .onSnapshot(() => reloadDataAndRender(), error => {
+          console.error('Payments listener error:', error);
+        });
+      
+      unsubscribeFunctions.push(paymentsUnsubscribe);
+
+      const ttcUnsubscribe = db.collection('tuition_calculations')
+        .where('studentPublicCode', '==', studentData.publicCode)
+        .onSnapshot(() => reloadDataAndRender(), error => {
+          console.error('Tuition calculations listener error:', error);
+        });
+      
+      unsubscribeFunctions.push(ttcUnsubscribe);
+    }
+
+    async function reloadDataAndRender() {
+      allItems = await loadTuitionCalculations();
+      renderAllItems();
+      updateSummary();
+    }
+
+    function switchLanguage(lang) {
+      currentLang = lang;
+      document.getElementById('btnEN').className = lang === 'en' ? 'lang-option active' : 'lang-option';
+      document.getElementById('btnVI').className = lang === 'vi' ? 'lang-option active' : 'lang-option';
+      updateUILanguage();
+    }
+
+    function updateUILanguage() {
+      const t = translations[currentLang];
+      document.getElementById('pageTitle').textContent = t.pageTitle;
+      document.getElementById('lblStudentID').textContent = t.lblStudentID;
+      document.getElementById('lblFullName').textContent = t.lblFullName;
+      document.getElementById('lblClass').textContent = t.lblClass;
+      document.getElementById('lblStatus').textContent = t.lblStatus;
+      document.getElementById('lblDateOfBirth').textContent = t.lblDateOfBirth;
+      document.getElementById('valStatus').textContent = t.valStatus;
+      document.getElementById('summaryTitle').textContent = t.summaryTitle;
+      document.getElementById('lblTotalOutstanding').textContent = t.lblTotalOutstanding;
+      document.getElementById('btnPayText').textContent = t.btnPayText;
+      document.getElementById('helperText').textContent = t.helperText;
+      document.getElementById('sectionTitle').textContent = t.sectionTitle;
+      document.getElementById('titleUnpaid').textContent = t.titleUnpaid;
+      document.getElementById('titleProcessing').textContent = t.titleProcessing;
+      document.getElementById('titlePaid').textContent = t.titlePaid;
+      document.getElementById('modalTitle').textContent = t.modalTitle;
+      document.getElementById('lblTotalAmount').textContent = t.lblTotalAmount;
+      document.getElementById('warningTitle').textContent = t.warningTitle;
+      document.getElementById('warningText').textContent = t.warningText;
+      document.getElementById('bankDetailsTitle').textContent = t.bankDetailsTitle;
+      document.getElementById('lblBankName').textContent = t.lblBankName;
+      document.getElementById('lblAccountNumber').textContent = t.lblAccountNumber;
+      document.getElementById('lblAccountHolder').textContent = t.lblAccountHolder;
+      document.getElementById('referenceTitle').textContent = t.referenceTitle;
+      document.getElementById('referenceText').textContent = t.referenceText;
+      document.getElementById('confirmationTitle').textContent = t.confirmationTitle;
+      document.getElementById('confirmationText').textContent = t.confirmationText;
+      document.getElementById('btnConfirmText').textContent = t.btnConfirmText;
+      document.getElementById('qrSectionTitle').textContent = t.qrSectionTitle;
+      document.getElementById('qrFooterText').textContent = t.qrFooterText;
+      document.getElementById('btnUnderstood').textContent = t.btnUnderstood;
+      document.getElementById('alertTitle').textContent = t.alertTitle;
+      document.getElementById('alertMessage').innerHTML = t.alertMessage.replace(/\n/g, '<br>');
+      document.getElementById('qrPlaceholder').textContent = t.qrPlaceholder;
+
+      renderAllItems();
+    }
+
+    function formatCurrency(amount) {
+      return amount.toLocaleString('vi-VN') + ' đ';
+    }
+
+    function renderAllItems() {
+      const unpaidItems = allItems.filter(item => item.status === 'unpaid');
+      const processingItems = allItems.filter(item => item.status === 'processing');
+      const paidItems = allItems.filter(item => item.status === 'paid');
+
+      renderSection('unpaid', unpaidItems);
+      renderSection('processing', processingItems);
+      renderSection('paid', paidItems);
+
+      updateSummary();
+    }
+
+    function renderSection(section, items) {
+      const container = document.getElementById(`items${section.charAt(0).toUpperCase() + section.slice(1)}`);
+      const t = translations[currentLang];
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="empty-state">${t.emptyState}</div>`;
+        return;
+      }
+
+      const itemsHtml = items.map(item => {
+        const title = currentLang === 'en' ? item.titleEN : item.title;
+
+        let subtitle = '';
+        
+        if (section === 'paid') {
+          const dateDisplay = item.payment_date || '—';
+          subtitle = `${t.paymentDate} ${dateDisplay}`;
+        } else {
+          subtitle = `${String(item.month).padStart(2, '0')}/${item.year}`;
+        }
+
+        return `
+          <div class="tuition-item ${section}">
+            <div class="item-left">
+              <div class="item-title">${title}</div>
+              <div class="item-subtitle">${subtitle}</div>
+            </div>
+            <div class="item-amount ${section}">${formatCurrency(item.amount)}</div>
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = itemsHtml;
+    }
+
+    function updateSummary() {
+      const unpaidItems = allItems.filter(item => item.status === 'unpaid');
+      
+      const totalOutstanding = unpaidItems.reduce((sum, item) => sum + item.amount, 0);
+
+      document.getElementById('totalAmount').textContent = formatCurrency(totalOutstanding);
+      document.getElementById('modalAmount').textContent = formatCurrency(totalOutstanding);
+
+      const payButton = document.getElementById('btnPayTuition');
+      if (totalOutstanding > 0) {
+        payButton.disabled = false;
+        payButton.style.background = '#2563eb';
+      } else {
+        payButton.disabled = true;
+        payButton.style.background = '#9ca3af';
+      }
+    }
+
+    function toggleAccordion(section) {
+      accordionState[section] = !accordionState[section];
+      updateAccordionUI();
+    }
+
+    function updateAccordionUI() {
+      ['unpaid', 'processing', 'paid'].forEach(section => {
+        const content = document.getElementById(`content${section.charAt(0).toUpperCase() + section.slice(1)}`);
+        const chevron = document.getElementById(`chevron${section.charAt(0).toUpperCase() + section.slice(1)}`);
+
+        if (accordionState[section]) {
+          content.classList.add('expanded');
+          chevron.classList.add('expanded');
+        } else {
+          content.classList.remove('expanded');
+          chevron.classList.remove('expanded');
+        }
+      });
+    }
+
+    function openModal() {
+      document.getElementById('paymentModal').classList.add('show');
+      generateQRCode();
+    }
+
+    function closeModal() {
+      document.getElementById('paymentModal').classList.remove('show');
+    }
+
+    function removeDiacritics(str) {
+      return str.normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd')
+        .replace(/Đ/g, 'D');
+    }
+
+    function generateQRCode() {
+      const unpaidItems = allItems.filter(item => item.status === 'unpaid');
+      const totalOutstanding = unpaidItems.reduce((sum, item) => sum + item.amount, 0);
+
+      let dobFormatted = '';
+      if (studentData && studentData.dateOfBirth) {
+        let dob = studentData.dateOfBirth;
+        
+        if (dob && typeof dob === 'object' && typeof dob.toDate === 'function') {
+          dob = dob.toDate();
+        }
+        
+        if (dob instanceof Date && !isNaN(dob.getTime())) {
+          const day = String(dob.getDate()).padStart(2, '0');
+          const month = String(dob.getMonth() + 1).padStart(2, '0');
+          const year = dob.getFullYear();
+          dobFormatted = `${day}-${month}-${year}`;
+        }
+        else if (typeof dob === 'string') {
+          dob = dob.trim();
+          if (dob.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            const [year, month, day] = dob.split('-');
+            dobFormatted = `${day}-${month}-${year}`;
+          } else if (dob.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+            dobFormatted = dob.replace(/\//g, '-');
+          } else if (dob.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)) {
+            const [day, month, year] = dob.split('/');
+            dobFormatted = `${day.padStart(2, '0')}-${month.padStart(2, '0')}-${year}`;
+          }
+        }
+      }
+
+      const now = new Date();
+      const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
+      const currentYear = now.getFullYear();
+
+      const fullName = studentData ? removeDiacritics(studentData.fullName) : '';
+      
+      const reference = `${fullName} - ${dobFormatted} - ${currentMonth}-${currentYear}`;
+
+      const bankId = '970407';
+      const accountNumber = '51414131319';
+      const accountName = 'HOANG THANH TUNG';
+      const amount = Math.round(totalOutstanding);
+
+      const qrUrl = `https://img.vietqr.io/image/${bankId}-${accountNumber}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(reference)}&accountName=${encodeURIComponent(accountName)}`;
+
+      const t = translations[currentLang];
+      const qrContainer = document.querySelector('.qr-code-image');
+      if (totalOutstanding > 0) {
+        qrContainer.innerHTML = `<img src="${qrUrl}" alt="VietQR Code">`;
+      } else {
+        qrContainer.innerHTML = `<span class="qr-placeholder">${t.qrNoFees}</span>`;
+      }
+    }
+
+    async function copyText(type) {
+      let text = '';
+      const config = window.elementSdk ? window.elementSdk.config : defaultConfig;
+
+      if (type === 'account') {
+        text = config.account_number || defaultConfig.account_number;
+      } else if (type === 'holder') {
+        text = config.account_holder || defaultConfig.account_holder;
+      } else if (type === 'reference') {
+        text = config.transfer_content || defaultConfig.transfer_content;
+      }
+
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast(translations[currentLang].toastCopied);
+
+        const buttonId = type === 'account' ? 'copyAccountBtn' : 
+                         type === 'holder' ? 'copyHolderBtn' : 'copyReferenceBtn';
+        const button = document.getElementById(buttonId);
+        
+        if (button) {
+          const originalText = button.textContent;
+          button.textContent = '✓';
+          button.classList.add('copied');
+          setTimeout(() => {
+            button.textContent = originalText;
+            button.classList.remove('copied');
+          }, 2000);
+        }
+      } catch (err) {
+        console.error('Failed to copy:', err);
+      }
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    function showAlert() {
+      document.getElementById('alertModal').classList.add('show');
+    }
+
+    function closeAlert() {
+      document.getElementById('alertModal').classList.remove('show');
+    }
+
+    async function confirmPayment() {
+      if (!studentData) return;
+
+      const unpaidItems = allItems.filter(item => item.status === 'unpaid');
+      if (unpaidItems.length === 0) return;
+
+      const confirmButton = document.getElementById('btnConfirmTransaction');
+      confirmButton.disabled = true;
+      confirmButton.querySelector('span:last-child').textContent = translations[currentLang].processing;
+
+      try {
+        const monthlyPayments = {};
+        
+        unpaidItems.forEach(item => {
+          const monthKey = item.ym;
+          if (!monthlyPayments[monthKey]) {
+            monthlyPayments[monthKey] = {
+              payDocId: item.payDocId,
+              year: item.year,
+              month: item.month,
+              ym: item.ym,
+              hasTuition: false,
+              hasExtraFees: false
+            };
+          }
+          
+          if (item.type === 'tuition') {
+            monthlyPayments[monthKey].hasTuition = true;
+          } else if (item.type === 'extra_fee') {
+            monthlyPayments[monthKey].hasExtraFees = true;
+          }
+        });
+
+        const batch = db.batch();
+        const now = firebase.firestore.FieldValue.serverTimestamp();
+
+        for (const [ym, data] of Object.entries(monthlyPayments)) {
+          const payRef = db.collection('payments').doc(data.payDocId);
+          
+          const updateData = {
+            studentPublicCode: studentData.publicCode,
+            year: data.year,
+            month: data.month,
+            ym: data.ym,
+            updatedAt: now,
+            studentConfirmed: true,
+            studentConfirmedAt: now,
+            status: 'processing'
+          };
+
+          if (data.hasTuition) {
+            updateData.tuitionProcessed = true;
+          }
+
+          if (data.hasExtraFees) {
+            updateData.extraFeesProcessed = true;
+          }
+
+          batch.set(payRef, updateData, { merge: true });
+        }
+
+        await batch.commit();
+
+        confirmButton.disabled = false;
+        const t = translations[currentLang];
+        confirmButton.querySelector('span:last-child').textContent = t.btnConfirmText;
+        
+        closeModal();
+        showAlert();
+
+      } catch (error) {
+        console.error('Error confirming payment:', error);
+        
+        confirmButton.disabled = false;
+        const t = translations[currentLang];
+        confirmButton.querySelector('span:last-child').textContent = t.btnConfirmText;
+        
+        showToast(t.errorConfirmPayment);
+      }
+    }
+
+    initializeApp();
+    updateAccordionUI();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b9faad6a3ba4625',t:'MTc2Nzc0OTE5MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
