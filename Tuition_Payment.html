@@ -873,7 +873,7 @@
   <div class="page-wrapper">
    <div class="page-header">
     <h1 class="page-title" id="pageTitle">—</h1>
-    <div class="lang-toggle-pill"><button class="lang-option" id="btnEN" onclick="switchLanguage('en')">English</button> <span class="lang-separator">|</span> <button class="lang-option active" id="btnVI" onclick="switchLanguage('vi')">Tieng Viet</button>
+    <div class="lang-toggle-pill"><button class="lang-option" id="btnEN" onclick="switchLanguage('en')">English</button> <span class="lang-separator">|</span> <button class="lang-option active" id="btnVI" onclick="switchLanguage('vi')">Tiếng Việt</button>
     </div>
    </div>
    <div class="student-card">
@@ -928,7 +928,7 @@
        —
       </div>
       <div class="summary-amount" id="totalAmount">
-       0 d
+       0 đ
       </div>
      </div><button class="pay-btn" id="btnPayTuition" onclick="openModal()"> <span class="pay-btn-icon">💳</span> <span id="btnPayText">—</span> </button>
      <div class="helper-text" id="helperText">
@@ -954,9 +954,9 @@
        <div class="accordion-header processing" onclick="toggleAccordion('processing')">
         <div class="accordion-header-left">
          <div class="accordion-dot processing"></div><span class="accordion-title" id="titleProcessing">—</span>
-        </div><span class="accordion-chevron expanded" id="chevronProcessing">▼</span>
+        </div><span class="accordion-chevron" id="chevronProcessing">▼</span>
        </div>
-       <div class="accordion-content expanded" id="contentProcessing">
+       <div class="accordion-content" id="contentProcessing">
         <div class="accordion-body">
          <div class="tuition-items" id="itemsProcessing"></div>
         </div>
@@ -966,9 +966,9 @@
        <div class="accordion-header paid" onclick="toggleAccordion('paid')">
         <div class="accordion-header-left">
          <div class="accordion-dot paid"></div><span class="accordion-title" id="titlePaid">—</span>
-        </div><span class="accordion-chevron expanded" id="chevronPaid">▼</span>
+        </div><span class="accordion-chevron" id="chevronPaid">▼</span>
        </div>
-       <div class="accordion-content expanded" id="contentPaid">
+       <div class="accordion-content" id="contentPaid">
         <div class="accordion-body">
          <div class="tuition-items" id="itemsPaid"></div>
         </div>
@@ -981,7 +981,7 @@
   <div class="modal-backdrop" id="paymentModal">
    <div class="modal-content">
     <div class="modal-header"><span class="modal-header-icon">💳</span>
-     <h2 class="modal-title" id="modalTitle">—</h2><button class="modal-close" onclick="closeModal()">✕</button>
+     <h2 class="modal-title" id="modalTitle">—</h2><button class="modal-close" onclick="closeModal()">×</button>
     </div>
     <div style="padding: 0 20px;">
      <div class="total-amount-box">
@@ -989,7 +989,7 @@
        —
       </div>
       <div class="total-amount-value" id="modalAmount">
-       0 d
+       0 đ
       </div>
      </div>
     </div>
@@ -1008,7 +1008,7 @@
         </div>
         <div class="bank-info-row"><span class="bank-info-label" id="lblBankName">—</span> <span class="bank-info-value" id="valBankName">Techcombank</span>
         </div>
-        <div class="bank-info-row"><span class="bank-info-label" id="lblAccountNumber">—</span> <span class="bank-info-value" id="valAccountNumber">5141 4131 319</span> <button class="copy-icon" id="copyAccountBtn" onclick="copyText('account')">📋</button>
+        <div class="bank-info-row"><span class="bank-info-label" id="lblAccountNumber">—</span> <span class="bank-info-value" id="valAccountNumber">2303199386</span> <button class="copy-icon" id="copyAccountBtn" onclick="copyText('account')">📋</button>
         </div>
         <div class="bank-info-row"><span class="bank-info-label" id="lblAccountHolder">—</span> <span class="bank-info-value" id="valAccountHolder">HOANG THANH TUNG</span> <button class="copy-icon" id="copyHolderBtn" onclick="copyText('holder')">📋</button>
         </div>
@@ -1055,7 +1055,7 @@
   <div class="alert-modal" id="alertModal">
    <div class="alert-content">
     <div class="alert-icon">
-     ✅
+     ✓
     </div>
     <div class="alert-title" id="alertTitle">
      —
@@ -1088,7 +1088,7 @@
 
     const defaultConfig = {
       bank_name: 'Techcombank',
-      account_number: '5141 4131 319',
+      account_number: '2303199386',
       account_holder: 'HOANG THANH TUNG',
       transfer_content: ''
     };
@@ -1580,40 +1580,76 @@
 
     function updateUILanguage() {
       const t = translations[currentLang];
-      document.getElementById('pageTitle').textContent = t.pageTitle;
-      document.getElementById('lblStudentID').textContent = t.lblStudentID;
-      document.getElementById('lblFullName').textContent = t.lblFullName;
-      document.getElementById('lblClass').textContent = t.lblClass;
-      document.getElementById('lblStatus').textContent = t.lblStatus;
-      document.getElementById('lblDateOfBirth').textContent = t.lblDateOfBirth;
-      document.getElementById('valStatus').textContent = t.valStatus;
-      document.getElementById('summaryTitle').textContent = t.summaryTitle;
-      document.getElementById('lblTotalOutstanding').textContent = t.lblTotalOutstanding;
-      document.getElementById('btnPayText').textContent = t.btnPayText;
-      document.getElementById('helperText').textContent = t.helperText;
-      document.getElementById('sectionTitle').textContent = t.sectionTitle;
-      document.getElementById('titleUnpaid').textContent = t.titleUnpaid;
-      document.getElementById('titleProcessing').textContent = t.titleProcessing;
-      document.getElementById('titlePaid').textContent = t.titlePaid;
-      document.getElementById('modalTitle').textContent = t.modalTitle;
-      document.getElementById('lblTotalAmount').textContent = t.lblTotalAmount;
-      document.getElementById('warningTitle').textContent = t.warningTitle;
-      document.getElementById('warningText').textContent = t.warningText;
-      document.getElementById('bankDetailsTitle').textContent = t.bankDetailsTitle;
-      document.getElementById('lblBankName').textContent = t.lblBankName;
-      document.getElementById('lblAccountNumber').textContent = t.lblAccountNumber;
-      document.getElementById('lblAccountHolder').textContent = t.lblAccountHolder;
-      document.getElementById('referenceTitle').textContent = t.referenceTitle;
-      document.getElementById('referenceText').textContent = t.referenceText;
-      document.getElementById('confirmationTitle').textContent = t.confirmationTitle;
-      document.getElementById('confirmationText').textContent = t.confirmationText;
-      document.getElementById('btnConfirmText').textContent = t.btnConfirmText;
-      document.getElementById('qrSectionTitle').textContent = t.qrSectionTitle;
-      document.getElementById('qrFooterText').textContent = t.qrFooterText;
-      document.getElementById('btnUnderstood').textContent = t.btnUnderstood;
-      document.getElementById('alertTitle').textContent = t.alertTitle;
-      document.getElementById('alertMessage').innerHTML = t.alertMessage.replace(/\n/g, '<br>');
-      document.getElementById('qrPlaceholder').textContent = t.qrPlaceholder;
+      
+      const safeUpdate = (id, value) => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.textContent = value;
+        }
+      };
+
+      // Page header
+      safeUpdate('pageTitle', t.pageTitle);
+      
+      // Student card LABELS only
+      safeUpdate('lblStudentID', t.lblStudentID);
+      safeUpdate('lblFullName', t.lblFullName);
+      safeUpdate('lblClass', t.lblClass);
+      safeUpdate('lblStatus', t.lblStatus);
+      safeUpdate('lblDateOfBirth', t.lblDateOfBirth);
+      
+      // Update status text translation ONLY
+      if (studentData && studentData.status === 'active') {
+        safeUpdate('valStatus', t.valStatus);
+      }
+      
+      // Summary card
+      safeUpdate('summaryTitle', t.summaryTitle);
+      safeUpdate('lblTotalOutstanding', t.lblTotalOutstanding);
+      safeUpdate('btnPayText', t.btnPayText);
+      safeUpdate('helperText', t.helperText);
+      
+      // Tuition section
+      safeUpdate('sectionTitle', t.sectionTitle);
+      safeUpdate('titleUnpaid', t.titleUnpaid);
+      safeUpdate('titleProcessing', t.titleProcessing);
+      safeUpdate('titlePaid', t.titlePaid);
+      
+      // Modal content
+      safeUpdate('modalTitle', t.modalTitle);
+      safeUpdate('lblTotalAmount', t.lblTotalAmount);
+      safeUpdate('warningTitle', t.warningTitle);
+      safeUpdate('warningText', t.warningText);
+      safeUpdate('bankDetailsTitle', t.bankDetailsTitle);
+      
+      // Bank details LABELS only
+      safeUpdate('lblBankName', t.lblBankName);
+      safeUpdate('lblAccountNumber', t.lblAccountNumber);
+      safeUpdate('lblAccountHolder', t.lblAccountHolder);
+      
+      // Reference section
+      safeUpdate('referenceTitle', t.referenceTitle);
+      safeUpdate('referenceText', t.referenceText);
+      
+      // Confirmation section
+      safeUpdate('confirmationTitle', t.confirmationTitle);
+      safeUpdate('confirmationText', t.confirmationText);
+      safeUpdate('btnConfirmText', t.btnConfirmText);
+      
+      // QR section
+      safeUpdate('qrSectionTitle', t.qrSectionTitle);
+      safeUpdate('qrFooterText', t.qrFooterText);
+      
+      // Footer buttons
+      safeUpdate('btnUnderstood', t.btnUnderstood);
+      
+      // Alert modal
+      safeUpdate('alertTitle', t.alertTitle);
+      
+      const alertMessage = document.getElementById('alertMessage');
+      if (alertMessage) {
+        alertMessage.innerHTML = t.alertMessage.replace(/\n/g, '<br>');
+      }
 
       renderAllItems();
     }
@@ -1764,7 +1800,7 @@
       const reference = `${fullName} - ${dobFormatted} - ${currentMonth}-${currentYear}`;
 
       const bankId = '970407';
-      const accountNumber = '51414131319';
+      const accountNumber = '2303199386';
       const accountName = 'HOANG THANH TUNG';
       const amount = Math.round(totalOutstanding);
 
@@ -1914,5 +1950,5 @@
     initializeApp();
     updateAccordionUI();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b9faad6a3ba4625',t:'MTc2Nzc0OTE5MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ </body>
 </html>
